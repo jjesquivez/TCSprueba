@@ -50,7 +50,7 @@ public class Services {
 		List<Integer> intElements = userRepository.findById(id)
 				.get()
 				.getIntElements();
-		return "The first element is: "+intElements.get(0)+"\n"+userId(id);
+		return intElements.get(0)+"\n"+userId(id);
 	}
 	
 	

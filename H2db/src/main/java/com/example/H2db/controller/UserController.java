@@ -33,71 +33,30 @@ public class UserController {
 	//User p1 = new User(3,"Lorena", Arrays.asList(234,35387,67,2,3,4,4,43,34,43));
 		
 	@PostMapping("/adduser")
-	public String addUser (@RequestBody User user) {
-        try {
-        	services.saveUser(user);
-    		return "User Saved!\n";
-			
-		}catch(Exception e){
-			return "Invalid input, variable must be a number!";
-		}
-		
-	}
+	public ResponseEntity<?> addUser (@RequestBody User user) {
+		return new ResponseEntity<>("User Added! "+services.saveUser(user), HttpStatus.OK);
+    }
 	
 	@PostMapping("/edituser/{id}")
-	public String editUser (@PathVariable(value = "id") Integer  id, @RequestBody User user) {
-        try {
-        	if(services.existId(id)==true) {
-    			return services.editUser(id, user);
-    		}else {
-    			return "User not found!";
-    		}
-		}catch(Exception e){
-			return "Invalid input, variable must be a number!";
-		}
-		
+	public ResponseEntity<?> editUser (@PathVariable(value = "id") Integer  id, @RequestBody User user) {
+		return new ResponseEntity<>(services.editUser(id, user), HttpStatus.OK);
 		
 	}
 
 	@DeleteMapping("/deleteuser/{id}")
-	public String deleteUser(@PathVariable(value = "id") Integer  id) {
-		try {
-			if(services.existId(id)==true) {
-				return services.deleteUser(id);
-			}else {
-				return "User not found";			
-			}
-		}catch(Exception e){
-			return "Invalid input, Path variable must be a number!";
-		}
+	public ResponseEntity<?> deleteUser(@PathVariable(value = "id") Integer  id) {
+		return new ResponseEntity<>(services.deleteUser(id), HttpStatus.OK);
 		
 	}
 	
 	@GetMapping("/duplicated/{id}")
-	public String duplicated(@PathVariable(value = "id") Integer  id) {
-		try {
-			if(services.existId(id)==true) {
-				return services.duplicated(id);
-			}else {
-				return "User not found!";
-			}
-		}catch(Exception e){
-			return "Invalid input, Path variable must be a number!";
-		}
-		
+	public ResponseEntity<?> duplicated(@PathVariable(value = "id") Integer  id) {
+		return new ResponseEntity<>(services.duplicated(id), HttpStatus.OK);
 	}
 	
 	@GetMapping("/max/{id}")
-	public String max(@PathVariable(value = "id") Integer  id) {
-		try {
-			if(services.existId(id)==true) {
-				return services.maxValue(id);
-			}else {
-				return "User not found!";
-			}
-		}catch(Exception e){
-			return "Invalid input, Path variable must be a number!";
-		}
+	public ResponseEntity<?> max(@PathVariable(value = "id") Integer  id) {
+		return new ResponseEntity<>(services.maxValue(id), HttpStatus.OK);
 	}	
 	
 	@ExceptionHandler(NullPointerException.class)
