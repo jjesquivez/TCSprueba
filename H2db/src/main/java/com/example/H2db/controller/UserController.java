@@ -1,8 +1,11 @@
 package com.example.H2db.controller;
 
 
+import java.util.NoSuchElementException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.example.H2db.model.User;
 import com.example.H2db.service.Services;
@@ -34,13 +38,16 @@ public class UserController {
 		
 	@PostMapping("/adduser")
 	public ResponseEntity<?> addUser (@RequestBody User user) {
-		return new ResponseEntity<>("User Added! "+services.saveUser(user), HttpStatus.OK);
+		return new ResponseEntity<>("User Added! \n"+services.saveUser(user), HttpStatus.OK);
     }
 	
 	@PostMapping("/edituser/{id}")
 	public ResponseEntity<?> editUser (@PathVariable(value = "id") Integer  id, @RequestBody User user) {
-		return new ResponseEntity<>(services.editUser(id, user), HttpStatus.OK);
-		
+		if(services.existId(id)){
+			return new ResponseEntity<>(services.editUser(id, user), HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>("User not found! ", HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@DeleteMapping("/deleteuser/{id}")
@@ -59,12 +66,22 @@ public class UserController {
 		return new ResponseEntity<>(services.maxValue(id), HttpStatus.OK);
 	}	
 	
-	@ExceptionHandler(NullPointerException.class)
-	public ResponseEntity<?> nullPointerHandler(NullPointerException e){
-		return new ResponseEntity<>("Invalid input, Path variable must be a number!", HttpStatus.BAD_REQUEST);
+	
+	
+		
+	@ExceptionHandler(NoSuchElementException.class)
+	public ResponseEntity<?> noSuchElementHandler(NoSuchElementException e){
+		return new ResponseEntity<>("User not found !", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<?> methodArgumentTypeMismatchHandler(MethodArgumentTypeMismatchException e){
+		return new ResponseEntity<>("Invalid Input, Path variable must be a number!", HttpStatus.BAD_REQUEST);
+	}
 	
-	
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<?> HttpMessageNotReadableHandler(HttpMessageNotReadableException e){
+		return new ResponseEntity<>("User's LIST must contain only integer numbers !", HttpStatus.BAD_REQUEST);
+	}
 
 }

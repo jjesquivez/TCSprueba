@@ -41,8 +41,9 @@ public class Services {
 	}
 	
 	public String deleteUser(int id) {
+		User u1 = userRepository.findById(id).get();
 		userRepository.deleteById(id);
-		return "User "+id+" deleted!\n";
+		return "User "+id+" deleted!\n"+ u1;
 		
 	}
 
