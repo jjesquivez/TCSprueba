@@ -2,7 +2,6 @@ package com.example.H2db.controller;
 
 
 import java.util.NoSuchElementException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -33,12 +32,14 @@ public class UserController {
 	public ResponseEntity<?> firstElement(@PathVariable(value = "id") Integer  id) {
 		return new ResponseEntity<>("The first element is: "+services.firstElement(id), HttpStatus.OK);
 	}
-	
-	//User p1 = new User(3,"Lorena", Arrays.asList(234,35387,67,2,3,4,4,43,34,43));
 		
 	@PostMapping("/adduser")
 	public ResponseEntity<?> addUser (@RequestBody User user) {
-		return new ResponseEntity<>("User Added! \n"+services.saveUser(user), HttpStatus.OK);
+		if(user.getIntElements().isEmpty()){
+			return new ResponseEntity<>("User's LIST should not be empty! ", HttpStatus.BAD_REQUEST);
+		}else {
+			return new ResponseEntity<>("User Added! \n"+services.saveUser(user), HttpStatus.OK);
+		}
     }
 	
 	@PostMapping("/edituser/{id}")
@@ -80,8 +81,13 @@ public class UserController {
 	}
 	
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<?> HttpMessageNotReadableHandler(HttpMessageNotReadableException e){
+	public ResponseEntity<?> httpMessageNotReadableHandler(HttpMessageNotReadableException e){
 		return new ResponseEntity<>("User's LIST must contain only integer numbers !", HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(NullPointerException.class)
+	public ResponseEntity<?> nullPointerExceptionHandler(NullPointerException e){
+		return new ResponseEntity<>("User's LIST is empty!", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

@@ -32,7 +32,12 @@ public class Services {
 	}
 
 	public String editUser(Integer id, User user) {
-		userRepository.save(user);
+		if (existId(id)) {
+			userRepository.deleteById(id);
+			userRepository.save(user);
+		}else {
+			userRepository.save(user);
+		}
 		return "User "+id+" Modified\n"+user;
 	}
 //
